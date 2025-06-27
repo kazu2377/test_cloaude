@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(sudo apt-get:*)",
+      "Bash(sudo apt-get install:*)",
+      "mcp__puppeteer__puppeteer_navigate",
+      "mcp__puppeteer__puppeteer_screenshot",
+      "mcp__puppeteer__puppeteer_fill",
+      "mcp__puppeteer__puppeteer_evaluate",
+      "mcp__puppeteer__puppeteer_click"
+    ],
+    "deny": []
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "supabase",
+    "github",
+    "puppeteer"
+  ],
+  "toolPermissions": {
+    "mcp__puppeteer": "session",
+    "mcp__puppeteer__puppeteer_navigate": "allow",
+    "mcp__puppeteer__puppeteer_screenshot": "allow",
+    "mcp__puppeteer__puppeteer_click": "session",
+    "mcp__puppeteer__puppeteer_type": "session",
+    "mcp__puppeteer__puppeteer_evaluate": "session"
+  }
+}
