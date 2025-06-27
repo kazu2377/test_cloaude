@@ -1,7 +1,16 @@
 import TodoForm from '@/components/TodoForm'
 import TodoList from '@/components/TodoList'
+import SearchBox from '@/components/SearchBox'
 
-export default function HomePage() {
+type Props = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export default async function HomePage({ searchParams }: Props) {
+  // URLから検索パラメータを取得
+  const resolvedSearchParams = await searchParams
+  const searchQuery = typeof resolvedSearchParams.q === 'string' ? resolvedSearchParams.q : undefined
+  const searchFilter = typeof resolvedSearchParams.filter === 'string' ? resolvedSearchParams.filter : undefined
   return (
     <main className="container mx-auto px-4 py-8 max-w-2xl">
       <h1 className="text-3xl font-bold text-center mb-8">
@@ -12,8 +21,11 @@ export default function HomePage() {
         {/* TODOフォーム */}
         <TodoForm />
         
+        {/* 検索ボックス */}
+        <SearchBox />
+        
         {/* TODOリスト */}
-        <TodoList />
+        <TodoList searchQuery={searchQuery} searchFilter={searchFilter} />
       </div>
       
       <div className="mt-8 p-4 bg-gray-50 rounded-lg">
@@ -24,6 +36,9 @@ export default function HomePage() {
           <li><code>useFormStatus</code> でフォームの送信状態を管理</li>
           <li><code>revalidatePath</code> でページの再検証</li>
           <li>Server ComponentとClient Componentの使い分け</li>
+          <li><code>useTransition</code> でリアルタイム検索とローディング状態管理</li>
+          <li>URLSearchParamsを使った検索状態の永続化</li>
+          <li>デバウンス処理による検索パフォーマンス最適化</li>
         </ul>
       </div>
     </main>

@@ -64,3 +64,24 @@ export async function deleteTodo(id: string) {
 export async function getTodos() {
   return todos
 }
+
+// TODOを検索するServer Action
+export async function searchTodos(query?: string, filter?: 'all' | 'completed' | 'pending') {
+  let filteredTodos = todos
+  
+  // テキスト検索
+  if (query && query.trim() !== '') {
+    filteredTodos = filteredTodos.filter(todo => 
+      todo.title.toLowerCase().includes(query.toLowerCase())
+    )
+  }
+  
+  // 状態フィルター
+  if (filter === 'completed') {
+    filteredTodos = filteredTodos.filter(todo => todo.completed)
+  } else if (filter === 'pending') {
+    filteredTodos = filteredTodos.filter(todo => !todo.completed)
+  }
+  
+  return filteredTodos
+}
