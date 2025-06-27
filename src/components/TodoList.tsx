@@ -1,4 +1,4 @@
-import { getTodos, toggleTodo, deleteTodo } from '@/app/_actions/todo'
+import { getTodos, searchTodos, toggleTodo, deleteTodo } from '@/app/_actions/todo'
 import { revalidatePath } from 'next/cache'
 
 // 個別のTODOアイテムコンポーネント
@@ -52,20 +52,67 @@ async function TodoItem({ todo }: { todo: any }) {
   )
 }
 
-export default async function TodoList() {
-  const todos = await getTodos()
+export default async function TodoList({ 
+  searchQuery, 
+  searchFilter 
+}: { 
+  searchQuery?: string; 
+  searchFilter?: string; 
+}) {
+  // 検索パラメータがある場合は検索、ない場合は全件取得
+  const todos = (searchQuery || searchFilter) 
+    ? await searchTodos(searchQuery, searchFilter as 'all' | 'completed' | 'pending')
+    : await getTodos();
+
+  const allTodos = await getTodos();
 
   if (todos.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">
-        TODOがありません。上のフォームから追加してください。
+        {searchQuery || (searchFilter && searchFilter !== 'all') ? (
+          <>
+            <p>検索条件に一致するTODOがありません。</p>
+            <p className="text-sm mt-2">
+              全{allTodos.length}件中 0件が一致
+            </p>
+          </>
+        ) : (
+          "TODOがありません。上のフォームから追加してください。"
+        )}
       </div>
     )
   }
 
+  // 検索結果のサマリー
+  const isFiltered = searchQuery || (searchFilter && searchFilter !== 'all');
+  const summaryText = isFiltered 
+    ? `検索結果: ${todos.length}件 (全${allTodos.length}件中)`
+    : `TODOリスト (${todos.length}件)`;
+
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">TODOリスト ({todos.length}件)</h2>
+      <h2 className="text-xl font-bold mb-4">{summaryText}</h2>
+      
+      {/* 検索条件の表示 */}
+      {isFiltered && (
+        <div className="mb-4 p-3 bg-blue-50 border-l-4 border-blue-400 text-blue-700">
+          <div className="flex flex-wrap gap-2 text-sm">
+            {searchQuery && (
+              <span>
+                キーワード: <strong>"{searchQuery}"</strong>
+              </span>
+            )}
+            {searchFilter && searchFilter !== 'all' && (
+              <span>
+                フィルター: <strong>
+                  {searchFilter === 'completed' ? '完了済み' : '未完了'}
+                </strong>
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+      
       <div>
         {todos.map((todo) => (
           <TodoItem key={todo.id} todo={todo} />
